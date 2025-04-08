@@ -156,6 +156,7 @@ function dbUpload(data) {
     } else {
         updateDb('projectDates', cdt.projectDates);
     }
+    pjdb.openDb();
 }
 
 window.download = () => {

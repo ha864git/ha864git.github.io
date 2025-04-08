@@ -201,9 +201,9 @@ export class Pjcal {
         const end = this.projectDates.end.replaceAll('/', '-');
         const report = this.projectDates.report.replaceAll('/', '-');
         let ht = `<div class="${this.name}inputDates">`
-        ht += `<label>開始日</label><input name="start" type="date" value="${start}"/>`
-        ht += `<label>終了日</label><input name="end" type="date" value="${end}" />`
-        ht += `<label>報告日</label><input name="report" type="date" value="${report}" />`
+        ht += `<label>開始日<input name="start" type="date" value="${start}"/></label>`
+        ht += `<label>終了日<input name="end" type="date" value="${end}" /></label>`
+        ht += `<label>報告日<input name="report" type="date" value="${report}" /></label>`
         ht += '</div>'
         document.querySelector(`#${this.name}ProjectDays`).innerHTML = ht;
         const inputs = document.querySelectorAll(`.${this.name}inputDates > input`);
