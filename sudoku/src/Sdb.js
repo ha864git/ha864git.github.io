@@ -20,7 +20,7 @@ export class Sdb {
             };
             if (!this.db.objectStoreNames.contains(this.objStoreName)) {
                 const objStoreKey = { autoIncrement: true };
-                const objectStore = db.createObjectStore(this.objStoreName, objStoreKey);
+                const objectStore = this.db.createObjectStore(this.objStoreName, objStoreKey);
                 console.log("Object store created.");
             }
         };
