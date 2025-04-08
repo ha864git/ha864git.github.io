@@ -1,0 +1,179 @@
+.stitle {
+    display: flex;
+    justify-content: center;
+    font-size: 24px;
+    color: black;
+    font-weight: bold;
+}
+
+.tbl_block {
+    background-color: dimgray;
+    border-spacing: 0;
+}
+
+td {
+    padding: 0;
+    border: 1px;
+}
+
+.tbl_numbutton {
+    margin-top: 10px;
+    background-color: white;
+    border-spacing: 0;
+}
+
+.buttons {
+    width: 384px;
+    margin-top: 10px;
+}
+
+
+.mbutton {
+    width: 72px;
+    line-height: 1;
+    padding: 10px 0;
+    border: none;
+    font-size: 20px;
+    background-color: rgb(138, 173, 173);
+    border-radius: 10px;
+    font-weight: bold;
+}
+
+.ebutton {
+    width: 72px;
+    line-height: 1;
+    padding: 10px 0;
+    border: none;
+    font-size: 11px;
+    background-color: rgb(138, 173, 173);
+    border-radius: 10px;
+    font-weight: bold;
+}
+
+.tbutton {
+    width: 40px;
+    height: 40px;
+    line-height: 0;
+    padding: 10px 0;
+    border: none;
+    font-size: 200%;
+    color: black;
+}
+
+.kbutton {
+    width: 40px;
+    height: 40px;
+    line-height: 0;
+    padding: 10px 0;
+    border: none;
+    font-size: 28px;
+    font-weight: bold;
+    background-color: rgb(138, 173, 173);
+    border-radius: 10px;
+    color: black;
+}
+
+.button_pink {
+    background-color: hotpink;
+}
+
+.button_orange {
+    background-color: orange;
+}
+
+.button_blue {
+    background-color: rgb(88, 97, 173);
+}
+
+.button_red {
+    background-color: red;
+}
+
+.button_cyan {
+    background-color: cyan;
+}
+
+.button_chartreuse {
+    background-color: chartreuse;
+}
+
+.button_bold {
+    font-weight: bold;
+}
+
+.cellnum {
+    text-align: center;
+    font-size: 20px;
+    line-height: 0;
+    padding: 10px 0;
+}
+
+p {
+    margin-block-start: 10px;
+    margin-block-end: 10px;
+}
+
+.container {
+    display: flex;
+    justify-content: center;
+}
+
+.child {
+    margin: 0 auto;
+}
+
+.tsel {
+    margin-top: 10px;
+    margin-left: 4px;
+    overflow: auto;
+    width: 380px;
+    height: 200px;
+}
+
+.tsel table {
+    margin: 0;
+    border-spacing: 0;
+}
+
+.tsel td {
+    white-space: nowrap;
+    border-right: 1px solid #999;
+    border-bottom: 1px solid #999;
+    background: #FFF;
+    padding: 5px;
+}
+
+.tsel th {
+    white-space: nowrap;
+    border-right: 1px solid #999;
+    border-bottom: 1px solid #999;
+    background: #f2f2f2;
+    position: sticky;
+    top: 0;
+    left: 0;
+}
+
+.tsel tr:first-child th {
+    border-top: 1px solid #999;
+}
+
+.tsel th:first-child {
+    border-left: 1px solid #999;
+}
+
+.tsel tr:first-child th:first-child {
+    z-index: 1;
+}
+
+#table1 tr:hover td {
+    background-color: #ffdaf8;
+}
+
+tr.selectedMark td {
+    background-color: rgb(138, 173, 173);
+}
+
+.button_memo {
+    line-height: 1;
+    font-size: 71%;
+}

@@ -1,0 +1,530 @@
+body {
+    overflow-x: hidden;
+}
+
+table,
+th,
+td {
+    border-collapse: collapse;
+    border: 1px solid #333;
+}
+
+table.table01 th {
+    background-color: #6b6b6b;
+    color: #fff;
+    padding: 5px;
+    border-bottom: 1px solid #E0E1E3;
+    border-right: 1px solid #E0E1E3;
+    position: sticky;
+    top: 0;
+    left: 0;
+}
+
+table.table01 td {
+    position: relative;
+    top: 0;
+    left: 0;
+}
+
+col.collapse {
+    visibility: collapse;
+}
+
+table.table01 td.cmdline {
+    width: 13px;
+    text-align: center;
+    font-size: 10px;
+}
+
+table.table01 th.task {
+    width: 200px;
+    text-align: left;
+}
+
+table.table01 th.duration {
+    width: 30px;
+    font-size: 80%;
+}
+
+table.table01 td.duration {
+    width: 30px;
+    text-align: right;
+    font-size: 80%;
+}
+
+table.table01 th.date {
+    width: 80px;
+    text-align: center;
+    font-size: 80%;
+}
+
+table.table01 td.date {
+    text-align: center;
+    font-size: 80%;
+}
+
+table.table01 td.level {
+    width: 17px;
+    text-align: center;
+    font-size: 80%;
+}
+
+table.table01 th.percent {
+    width: 32px;
+    text-align: center;
+    font-size: 80%;
+}
+
+table.table01 td.staff {
+    width: 50px;
+    text-align: center;
+}
+
+table.table01 td.percent {
+    text-align: right;
+    font-size: 80%;
+}
+
+td.task.lev1 {
+    padding-left: 2px;
+}
+
+td.task.lev2 {
+    padding-left: 12px;
+}
+
+td.task.lev3 {
+    padding-left: 22px;
+}
+
+td.task.lev4 {
+    padding-left: 32px;
+}
+
+td.task.lev5 {
+    padding-left: 42px;
+}
+
+.frame1 {
+    position: relative;
+}
+
+.canvash {
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    width: 900px;
+    height: 150px;
+    padding-top: 0px;
+    padding-left: 0px;
+    background-color: white;
+}
+
+.frameCanvas {
+    position: absolute;
+    top: 0px;
+    left: 800px;
+    width: 4000px;
+    height: 4000px;
+    padding-top: 0px;
+    padding-left: 0px;
+    overflow: hidden;
+}
+
+.canvas1 {
+    position: fixed;
+    top: 0px;
+    left: 800px;
+    width: 4000px;
+    height: 4000px;
+    padding-top: 0px;
+    padding-left: 0px;
+}
+
+.canvas2 {
+    position: absolute;
+    top: 0px;
+    left: 800px;
+    width: 4000px;
+    height: 4000px;
+    padding-top: 0px;
+    padding-left: 0px;
+}
+
+.edit-td .edit-area {
+    border: 0;
+    margin: 0;
+    padding: 0;
+    display: block;
+    resize: none;
+    outline: none;
+    overflow: auto;
+}
+
+.edit-controls {
+    position: absolute;
+}
+
+#dateinput {
+    border: 0;
+    margin: 0;
+    padding: 0;
+}
+
+.edit-button {
+    opacity: 1.0;
+    font-size: 40%;
+    border: 1;
+    padding: 0;
+    border-radius: 5px;
+    background-color: darkcyan;
+    color: white;
+    width: 50px;
+}
+
+button.date-button {
+    opacity: 1.0;
+    font-size: 40%;
+    border: 1;
+    margin: 0;
+    padding: 0;
+    padding-inline: 0;
+    border-width: 0;
+    border-radius: 5px;
+    background-color: darkcyan;
+    color: white;
+    width: 20px;
+}
+
+div.warap-date-buttons {
+    border: 0;
+    margin: 0;
+    padding: 0;
+
+}
+
+
+#edit-control {
+    position: absolute;
+    top: 0px;
+    left: 200px;
+    z-index: 15;
+    visibility: hidden;
+}
+
+#edit-control2 {
+    position: absolute;
+    top: 0px;
+    left: 200px;
+    z-index: 15;
+    visibility: hidden;
+}
+
+.buttons {
+    position: fixed;
+    top: 3px;
+    left: 250px;
+
+    z-index: 20;
+}
+
+.buttons2 {
+    position: fixed;
+    top: 3px;
+    left: 478px;
+    font-size: 70%;
+    z-index: 20;
+}
+
+.shiftbutton {
+    width: 45px;
+    line-height: 1;
+    padding: 5px 0;
+    border: none;
+    font-size: 16px;
+    background-color: rgb(138, 173, 173);
+    border-radius: 3px;
+}
+
+.shiftbutton.progressMode {
+    background-color: pink;
+}
+
+.abutton {
+    width: 80px;
+    line-height: 1;
+    padding: 5px 0;
+    border: none;
+    font-size: 16px;
+    background-color: rgb(138, 173, 173);
+    border-radius: 5px;
+}
+
+.bbutton {
+    width: 60px;
+    line-height: 1;
+    padding: 5px 0;
+    border: none;
+    font-size: 16px;
+    background-color: rgb(138, 173, 173);
+    border-radius: 5px;
+}
+
+.ebutton {
+    width: 72px;
+    line-height: 1;
+    padding: 10px 0;
+    border: none;
+    font-size: 16px;
+    background-color: rgb(138, 173, 173);
+    border-radius: 5px;
+    font-weight: bold;
+}
+
+.autoValue {
+    background-color: lemonchiffon;
+}
+
+.tab_body_1 {
+    display: none;
+}
+
+.tab_body_2 {
+    display: none;
+    position: absolute;
+    top: 50px;
+    left: 50px;
+    background-color: rgb(227, 244, 249);
+    min-height: 400px;
+    padding: 20px 30px;
+    border-radius: 10px;
+}
+
+.tab_body.is-show {
+    display: block;
+}
+
+.inputDates {
+    margin: 20px;
+}
+
+#week {
+    margin: 20px;
+}
+
+#week th {
+    text-align: center;
+    width: 50px;
+    background-color: gray;
+    color: white;
+}
+
+#week td {
+    text-align: center;
+    background-color: white;
+}
+
+#tableCalender {
+    margin: 20px;
+}
+
+.wrapCalender {
+    height: 230px;
+}
+
+#tableCalender td {
+    width: 58px;
+    text-align: center;
+    background-color: white;
+}
+
+.clym {
+    font-size: 20px;
+    font-weight: bold;
+}
+
+#tableCalender td.headder {
+    background-color: gray;
+    font-weight: bold;
+    color: white;
+}
+
+#holidays {
+    margin: 0px;
+    width: 300px;
+    height: 200px;
+
+}
+
+#workdays {
+    margin: 0px;
+    width: 300px;
+    height: 200px;
+
+}
+
+.setdays {
+    display: flex;
+}
+
+.settingDays {
+    margin: 20px;
+    width: 300px;
+}
+
+
+.tsel {
+    overflow: auto;
+    height: 200px;
+}
+
+.tsel table {
+    margin: 0;
+    border-spacing: 0;
+}
+
+.tsel td {
+    white-space: nowrap;
+    border-right: 1px solid #999;
+    border-bottom: 1px solid #999;
+    background: #FFF;
+    padding: 5px;
+}
+
+.tsel th {
+    white-space: nowrap;
+    border-right: 1px solid #999;
+    border-bottom: 1px solid #999;
+    background: #f2f2f2;
+    position: sticky;
+    top: 0;
+    left: 0;
+}
+
+.tsel tr:first-child th {
+    border-top: 1px solid #999;
+}
+
+.tsel th:first-child {
+    border-left: 1px solid #999;
+}
+
+.colmemo {
+    width: 200px;
+}
+
+input:invalid+span::after {
+    content: " ✖";
+}
+
+input:valid+span::after {
+    content: " ✓";
+}
+
+/* ---------------------------- */
+#calendarProjectDays {
+    margin: 20px;
+}
+
+#calendarWeekDays {
+    margin: 20px;
+}
+
+#calendarWeekDays td {
+    width: 40px;
+    text-align: center;
+    background: white;
+}
+
+#calendarCalender {
+    margin: 20px;
+}
+
+#calendar td {
+    width: 40px;
+    text-align: center;
+    background: white;
+}
+
+#calendar td.calendar2tdNote {
+    text-align: left;
+}
+
+#calendar td.headder {
+    color: white;
+    background: gray;
+}
+
+#calendar td.invalid {
+    font-size: 50%;
+}
+
+#calendarFileIO {
+    margin: 20px;
+}
+
+/* -------------- */
+.mycanvasFrameCanvas {
+    position: absolute;
+    top: 0px;
+    left: 800px;
+    z-index: 5;
+    width: 4000px;
+    height: 4000px;
+    padding-top: 0px;
+    padding-left: 0px;
+    overflow: hidden;
+}
+
+.mycanvascanvas1 {
+    position: fixed;
+    top: 0px;
+    left: 800px;
+    z-index: 4;
+    width: 4000px;
+    height: 4000px;
+    padding-top: 0px;
+    padding-left: 0px;
+}
+
+.mycanvascanvas2 {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    z-index: 2;
+    width: 4000px;
+    height: 4000px;
+    padding-top: 0px;
+    padding-left: 0px;
+}
+
+.mycanvascanvash {
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    z-index: 7;
+    width: 4000px;
+    height: 4000px;
+    padding-top: 0px;
+    padding-left: 0px;
+    background-color: white;
+}
+
+.editButton {
+    position: fixed;
+    top: 37px;
+    left: 30px;
+    z-index: 20;
+    font-size: 16px;
+    border: none;
+    background-color: transparent;
+    padding-top: 0px;
+    padding-left: 0px;
+    background-color: #6b6b6b;
+}
+
+#mytabledate-picker {
+    position: absolute;
+    z-index: 15;
+    visibility: hidden;
+}

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Gantt Chart</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+  <div class="buttons">
+    <button id="reDraw" class="abutton" type="button" onclick="redraw()">&#x1f4ca;</button>
+    <button id="calender" class="abutton" type="button" onclick="setCalendar()">📅</button>
+  </div>
+  <div class="tab">
+    <div class="tab_body tab_body_1 is-show">
+      <div class="frame1">
+        <label>Project Name</label>
+        <div class="buttons2">
+          <button id="progressLine" class="shiftbutton" type="button" onclick="progressLine()">📉</button>
+          <button id="download" class="shiftbutton" type="button" onclick="download()">&#x1f4c2;⬇</button>
+          <button id="upload" class="shiftbutton" type="button" onclick="upload()">&#x1f4c2;⬆</button>
+          <button id="shiftL" class="shiftbutton" type="button">◀</button>
+          <button id="shiftR" class="shiftbutton" type="button">▶</button>
+        </div>
+      </div>
+      <div id="mytable"></div>
+      <div id="mycanvas"></div>
+      <input type="file" id="fileinput" accept=".json" style="display:none">
+    </div>
+    <div class="tab_body tab_body_2">
+      <div id="mycalendar"></div>
+    </div>
+  </div>
+  <script type="module" src="index.js"></script>
+</body>
+
+</html>
