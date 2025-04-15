@@ -224,7 +224,7 @@ div.warap-date-buttons {
     position: fixed;
     top: 3px;
     left: 250px;
-
+    font-size: 70%;
     z-index: 20;
 }
 

@@ -388,6 +388,12 @@ export class Pjcvs {
         can1.style.top = (y - y_origin - 1) + "px";
         canH.style.left = (x - 4000) + "px";
         canH.style.top = (y - 4000) + "px";
+        const buttons = document.querySelector(`.buttons`);
+        const buttons_left = 250 + x - 721;
+        buttons.style.left = `${buttons_left}px`;
+        const buttons2 = document.querySelector(`.buttons2`);
+        const buttons2_left = 480 + x - 721;
+        buttons2.style.left = `${buttons2_left}px`;
     }
 
     #getPosition(str_date) {

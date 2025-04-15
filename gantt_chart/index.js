@@ -10,6 +10,7 @@ pjcal.updateDb = (kind, data) => pjdb.updateDb(kind, data);
 const pjtbl = new Pjtbl("mytable");
 pjtbl.isWorkingDay = (dt) => { return pjcal.isWorkingDay(dt); }
 pjtbl.updateDb = (kind, data) => pjdb.updateDb(kind, data);
+pjtbl.resizeWindow = () => pjcvs.resizeWindow();
 window.onclickTdCommand = (td) => pjtbl.onclickTdCommand(td);
 window.onclickTdText = (td) => pjtbl.onclickTdText(td);
 window.onclickTdDate = (td) => pjtbl.onclickTdDate(td);
@@ -41,7 +42,6 @@ function didDbOpen(data) {
     const year = today.getFullYear();
     const month = today.getMonth() + 1;
     pjcal.createCalender(year, month);
-    if (pjtbl.projectDb.length == 0) { return; }
     pjtbl.makeTableHtml();
     pjcvs.draw(pjcal.projectDates.start, pjcal.projectDates.end, pjcal.projectDates.report, 15, 20, 0, 200, progressLineMode, pjtbl.tbody);
 }
@@ -59,7 +59,7 @@ window.redraw = () => {
     pjcvs.draw(pjcal.projectDates.start, pjcal.projectDates.end, pjcal.projectDates.report, 15, 20, 0, 200, progressLineMode, pjtbl.tbody);
     showEdit();
     pjtbl.setTableEditMode(editMode);
-    pjcvs.drawTableHeadder();
+    pjcvs.drawTable();
     pjcvs.resizeWindow();
 }
 
@@ -73,7 +73,7 @@ window.edit = () => {
     editMode = !editMode;
     showEdit();
     pjtbl.setTableEditMode(editMode);
-    pjcvs.drawTableHeadder();
+    pjcvs.drawTable();
     pjcvs.resizeWindow();
 }
 

@@ -8,6 +8,7 @@ export class Pjtbl {
         this.name = name;
         this.tblid = null;
         this.makeTable(name);
+        this.resizeWindow = null;
         this.#tbl = { level: 4, task: 5, staff: 6, pstart: 7, duration: 8, pend: 9, rstart: 10, rend: 11, percent: 12 };
         this.isWorkingDay = null;
         this.editingTd = null;
@@ -216,7 +217,12 @@ export class Pjtbl {
         const table = tbody.parentElement;
         const trlen = tbody.children.length;
         if (editMode) {
-            if (trlen <= this.projectDb.length) {
+            if (trlen == 0) {
+                let ht = "<tr>";
+                ht += '<td class="cmdline lastline" onclick="onclickTdCommand(this)">➕</td>';
+                ht += "</tr>";
+                tbody.innerHTML = ht;
+            } else if (trlen <= this.projectDb.length) {
                 table.insertRow(trlen + 1);
                 const newtr = tbody.children[trlen];
                 newtr.innerHTML = '<td class="cmdline lastline" onclick="onclickTdCommand(this)">➕</td>';
@@ -465,6 +471,7 @@ export class Pjtbl {
                 };
                 this.projectDb.splice(row - 1, 0, insertdata);
                 this.updateDb('task', this.projectDb);
+                this.resizeWindow();
                 break;
             case "❎":  //  行削除
                 table.deleteRow(row);
