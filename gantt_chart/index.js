@@ -59,7 +59,7 @@ window.redraw = () => {
     pjcvs.draw(pjcal.projectDates.start, pjcal.projectDates.end, pjcal.projectDates.report, 15, 20, 0, 200, progressLineMode, pjtbl.tbody);
     showEdit();
     pjtbl.setTableEditMode(editMode);
-    pjcvs.drawTable();
+    pjcvs.drawTableHeadder();
     pjcvs.resizeWindow();
 }
 
@@ -73,7 +73,7 @@ window.edit = () => {
     editMode = !editMode;
     showEdit();
     pjtbl.setTableEditMode(editMode);
-    pjcvs.drawTable();
+    pjcvs.drawTableHeadder();
     pjcvs.resizeWindow();
 }
 
