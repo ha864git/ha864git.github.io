@@ -1,0 +1,624 @@
+body {
+    background-color: rgb(177, 247, 223);
+
+}
+
+.title {
+    font-family: Arial, sans-serif;
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.container {
+    font-family: Arial, sans-serif;
+    background-color: white;
+    position: absolute;
+    margin-top: 370px;
+    margin-left: 1000px;
+    perspective: 1000px;
+
+}
+
+.container2 {
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    perspective: 1000px;
+}
+
+/* Common styles for all faces */
+.face {
+    position: absolute;
+    width: 100px;
+    height: 100px;
+    border: 1px solid rgb(199, 199, 199);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 20px;
+    font-weight: bold;
+    text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.5);
+    opacity: 1.0;
+}
+
+.front {
+    background-color: #FE0000;
+    color: #f0f0f0;
+    transform: rotateY(0deg) translateZ(50px);
+    /* Moves the front face 50px towards the viewer */
+}
+
+.back {
+    background-color: #FEA500;
+    transform: rotateY(180deg) translateZ(50px);
+    /* Rotates 180° around Y-axis and moves 50px forward */
+}
+
+.right {
+    background-color: #008001;
+    color: #f0f0f0;
+    transform: rotateY(90deg) translateZ(50px);
+    /* Rotates 90° right around Y-axis and moves 50px forward */
+}
+
+.left {
+    background-color: #0000FE;
+    color: #f0f0f0;
+    transform: rotateY(-90deg) translateZ(50px);
+    /* Rotates 90° left around Y-axis and moves 50px forward */
+}
+
+.top {
+    background-color: #FFFF00;
+    transform: rotateX(90deg) translateZ(50px);
+    /* Rotates 90° upward around X-axis and moves 50px forward */
+}
+
+.bottom {
+    background-color: #FFFFFF;
+    transform: rotateX(-90deg) translateZ(50px);
+    /* Rotates 90° downward around X-axis and moves 50px forward */
+}
+
+.bfront {
+    background-color: gray;
+    transform: rotateY(0deg) translateZ(50px);
+    /* Moves the front face 50px towards the viewer */
+}
+
+.bback {
+    background-color: gray;
+    transform: rotateY(180deg) translateZ(50px);
+    /* Rotates 180° around Y-axis and moves 50px forward */
+}
+
+.bright {
+    background-color: gray;
+    transform: rotateY(90deg) translateZ(50px);
+    /* Rotates 90° right around Y-axis and moves 50px forward */
+}
+
+.bleft {
+    background-color: gray;
+    transform: rotateY(-90deg) translateZ(50px);
+    /* Rotates 90° left around Y-axis and moves 50px forward */
+}
+
+.btop {
+    background-color: gray;
+    transform: rotateX(90deg) translateZ(50px);
+    /* Rotates 90° upward around X-axis and moves 50px forward */
+}
+
+.bbottom {
+    background-color: gray;
+    transform: rotateX(-90deg) translateZ(50px);
+    /* Rotates 90° downward around X-axis and moves 50px forward */
+}
+
+.cube {
+    width: 100px;
+    height: 100px;
+    position: absolute;
+    transform-style: preserve-3d;
+}
+
+.bigcube {
+    width: 300px;
+    height: 300px;
+    position: absolute;
+    transform-style: preserve-3d;
+    transform-origin: 0px 0px -50px;
+    transform: rotateX(-40deg) rotateY(-40deg) rotateZ(0deg);
+    /* ルービック・キューブ表示角度 */
+}
+
+.bigcube2 {
+    width: 300px;
+    height: 300px;
+    position: absolute;
+    transform-style: preserve-3d;
+    transform-origin: 0px 0px -50px;
+    /* ルービック・キューブ表示角度 */
+}
+
+
+.bigcube3 {
+    width: 300px;
+    height: 300px;
+    position: absolute;
+    transform-style: preserve-3d;
+    transform: rotateX(-45deg) rotateY(-45deg) rotateZ(0deg);
+    /* ルービック・キューブ表示角度 */
+}
+
+/* Define the rotation animation */
+@keyframes rotate {
+    0% {
+        transform: rotateX(0deg) rotateY(0deg);
+    }
+
+    25% {
+        transform: rotateX(90deg) rotateY(90deg);
+    }
+
+    50% {
+        transform: rotateX(180deg) rotateY(180deg);
+    }
+
+    75% {
+        transform: rotateX(270deg) rotateY(270deg);
+    }
+
+    100% {
+        transform: rotateX(360deg) rotateY(360deg);
+    }
+}
+
+@keyframes rotateX90 {
+    100% {
+        transform: rotateX(90deg);
+    }
+}
+
+@keyframes rotateXr90 {
+    100% {
+        transform: rotateX(-90deg);
+    }
+}
+
+@keyframes rotateY90 {
+    100% {
+        transform: rotateY(90deg);
+    }
+}
+
+@keyframes rotateYr90 {
+    100% {
+        transform: rotateY(-90deg);
+    }
+}
+
+@keyframes rotateZ90 {
+    100% {
+        transform: rotateZ(90deg);
+    }
+}
+
+@keyframes rotateZr90 {
+    100% {
+        transform: rotateZ(-90deg);
+    }
+}
+
+@keyframes rotateX180 {
+    100% {
+        transform: rotateX(180deg);
+    }
+}
+
+@keyframes rotateXr180 {
+    100% {
+        transform: rotateX(-180deg);
+    }
+}
+
+@keyframes rotateY180 {
+    100% {
+        transform: rotateY(180deg);
+    }
+}
+
+@keyframes rotateYr180 {
+    100% {
+        transform: rotateY(-180deg);
+    }
+}
+
+@keyframes rotateZ180 {
+    100% {
+        transform: rotateZ(180deg);
+    }
+}
+
+@keyframes rotateZr180 {
+    100% {
+        transform: rotateZ(-180deg);
+    }
+}
+
+table.cube2d {
+    border: 4px solid rgb(177, 247, 223);
+    background-color: rgb(177, 247, 223);
+}
+
+.cube2d td {
+    border: 3px solid rgb(177, 247, 223);
+    width: 40px;
+    height: 40px;
+    text-align: center;
+}
+
+.tdb {
+    border: 1px solid #333;
+}
+
+.r0 {
+    transform: rotate(0deg)
+}
+
+.r90 {
+    transform: rotate(90deg)
+}
+
+.r180 {
+    transform: rotate(180deg)
+}
+
+.r270 {
+    transform: rotate(270deg)
+}
+
+.cR {
+    background-color: #FE0000;
+    color: white;
+}
+
+.cO {
+    background-color: #FEA500;
+    color: black;
+}
+
+.cG {
+    background-color: #008001;
+    color: white;
+}
+
+.cB {
+    background-color: #0000FE;
+    color: white;
+}
+
+.cY {
+    background-color: #FFFF00;
+    color: black;
+}
+
+.cW {
+    background-color: #FFFFFF;
+    color: black;
+}
+
+.rbutton {
+    position: absolute;
+    opacity: 0;
+    border: none;
+}
+
+.rbutton:hover {
+    opacity: 0.3;
+}
+
+.p90 {
+    width: 65px;
+    height: 130px;
+    z-index: 15;
+}
+
+.m90 {
+    width: 65px;
+    height: 130px;
+    z-index: 15;
+}
+
+.img90 {
+    width: 65px;
+    height: 130px;
+}
+
+.imgr90 {
+    width: 65px;
+    height: 130px;
+    transform: scale(-1, 1);
+}
+
+.cubecw {
+    position: absolute;
+    border: none;
+    background-color: white;
+    margin-top: -550px;
+    margin-left: 250px;
+    z-index: 15;
+}
+
+.cubeccw {
+    position: absolute;
+    border: none;
+    background-color: white;
+    margin-top: -550px;
+    margin-left: 150px;
+    z-index: 15;
+}
+
+.cubescw {
+    position: absolute;
+    border: none;
+    background-color: white;
+    margin-top: -500px;
+    margin-left: 200px;
+    z-index: 15;
+}
+
+.cubesccw {
+    position: absolute;
+    border: none;
+    background-color: white;
+    margin-top: -600px;
+    margin-left: 200px;
+    z-index: 15;
+}
+
+.imgccw {
+    width: 20px;
+    height: 30px;
+}
+
+.imgcw {
+    width: 20px;
+    height: 30px;
+    transform: scale(-1, 1);
+}
+
+#text_area {
+    width: 520px;
+    height: 900px;
+    margin-top: 3px;
+    padding: 5px;
+    font-size: 14px;
+    font-family: sans-serif;
+    -ms-ime-mode: disabled;
+}
+
+.cbutton {
+    width: 30px;
+    height: 30px;
+    line-height: 1;
+    padding: 5px 0;
+    border: none;
+    margin-left: 10px;
+    font-size: 20px;
+    background-color: rgb(138, 173, 173);
+    border-radius: 3px;
+}
+
+.cbutton.mark {
+    background-color: pink;
+}
+
+
+.cM {
+    background-color: transparent;
+    border: none;
+}
+
+#surfaceRings {
+    width: 300px;
+    height: 300px;
+    position: absolute;
+    transform-style: preserve-3d;
+    transform: translateX(-50px) translateY(-300px) translateZ(-50px);
+    margin-left: 0px;
+    margin-top: 0px;
+}
+
+#controlRings {
+    width: 100px;
+    height: 100px;
+    position: absolute;
+    transform-style: preserve-3d;
+    transform: translateX(-50px) translateY(-400px) translateZ(-50px);
+    margin-left: 0px;
+    margin-top: 0px;
+}
+
+.imgrot {
+    width: 50px;
+    height: 100px;
+}
+
+.imgrotr {
+    width: 50px;
+    height: 100px;
+    transform: scale(-1, 1);
+}
+
+
+.imgrot3 {
+    width: 140px;
+    height: 280px;
+}
+
+.imgrotr3 {
+    width: 140px;
+    height: 280px;
+    transform: scale(-1, 1);
+}
+
+.wbutton {
+    opacity: 0.1;
+    border: none;
+}
+
+.wbutton:hover {
+    opacity: 1;
+}
+
+.wbutton3 {
+    opacity: 0;
+    border: none;
+}
+
+.wbutton3:hover {
+    opacity: 0.5;
+}
+
+.ring {
+    position: absolute;
+    width: 100px;
+    height: 100px;
+    border: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.ring3 {
+    position: absolute;
+    width: 100px;
+    height: 100px;
+    border: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+
+.reast {
+    transform: rotateY(90deg) translateX(-150px) translateY(-20px) translateZ(140px);
+}
+
+.rtop {
+    transform: rotateX(90deg) translateX(-5px) translateY(100px) translateZ(90px);
+}
+
+.rsouth {
+    transform: rotateY(0deg) translateX(10px) translateY(0px) translateZ(250px);
+}
+
+.rwest {
+    transform: rotateY(-90deg) translateZ(50px);
+}
+
+.rbottom {
+    transform: rotateX(-90deg) translateZ(50px);
+}
+
+.rnorth {
+    transform: rotateY(180deg) translateZ(50px);
+}
+
+#westMirror {
+    width: 300px;
+    height: 300px;
+    position: absolute;
+    transform-style: preserve-3d;
+}
+
+.rotate-westMirror {
+    width: 300px;
+    height: 300px;
+    position: absolute;
+    transform-style: preserve-3d;
+    transform-origin: -540px 0px -50px;
+    transform: rotateX(0deg);
+}
+
+#northMirror {
+    width: 300px;
+    height: 300px;
+    position: absolute;
+    transform-style: preserve-3d;
+}
+
+.rotate-northMirror {
+    width: 300px;
+    height: 300px;
+    position: absolute;
+    transform-style: preserve-3d;
+    transform-origin: 0px 0px -600px;
+    transform: rotateZ(0deg);
+}
+
+#bottomMirror {
+    width: 300px;
+    height: 300px;
+    position: absolute;
+    transform-style: preserve-3d;
+}
+
+.rotate-bottomMirror {
+    width: 300px;
+    height: 300px;
+    position: absolute;
+    transform-style: preserve-3d;
+    transform-origin: 0px 600px -50px;
+    transform: rotateY(0deg);
+}
+
+.ring3 {
+    position: absolute;
+    width: 300px;
+    height: 300px;
+    border: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.img3rot {
+    width: 150px;
+    height: 300px;
+}
+
+.img3rotr {
+    width: 150px;
+    height: 300px;
+    transform: scale(-1, 1);
+}
+
+.w3button {
+    opacity: 0;
+    border: none;
+}
+
+.w3button:hover {
+    opacity: 0.5;
+}
+
+.r3bottom {
+    transform: rotateX(-90deg);
+}
+
+.r3west {
+    transform: rotateY(90deg);
+}
+
+#logcount {
+    margin: 2px;
+    display: inline-block;
+    width: 33px;
+    text-align: center;
+    background-color: aqua;
+}
