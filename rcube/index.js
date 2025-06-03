@@ -78,7 +78,7 @@ window.nextStep = function () {
     const list = document.getElementById('text_area');
     if (!list.value.endsWith('\n')) list.value = list.value + '\n';
     list.scrollTo(0, list.scrollHeight); // Show the latest line
-    list.focus();
+  //  list.focus();  // タブレット、スマホでテキストエリアにフォーカスするとキーボードが出て煩わしい
 }
 
 window.updateN = function () {
@@ -150,7 +150,7 @@ window.onload = function () {
     document.querySelector('#westMirror').outerHTML = make_west_html(rcube);
     document.querySelector('#northMirror').outerHTML = make_north_html(rcube);
     document.querySelector('#bottomMirror').outerHTML = make_bottom_html(rcube);
-    document.getElementById('text_area').focus();
+  //  document.getElementById('text_area').focus();  // タブレット、スマホでテキストエリアにフォーカスするとキーボードが出て煩わしい
     executeView(['', 'blue', 'white']);
 }
 
@@ -437,14 +437,14 @@ function print_log(str) {
     const list = document.getElementById('text_area');
     list.value = list.value + '\n' + str;
     list.scrollTo(0, list.scrollHeight); // Show the latest line
-    list.focus();
+   // list.focus();  // タブレット、スマホでテキストエリアにフォーカスするとキーボードが出て煩わしい
 }
 
 function print_clear() {
     const list = document.getElementById('text_area');
     list.value = '';
     list.scrollTo(0, list.scrollHeight); // Show the latest line
-    list.focus();
+   // list.focus();   // タブレット、スマホでテキストエリアにフォーカスするとキーボードが出て煩わしい
 }
 
 function getOtherSideColor(color, surfaces) {

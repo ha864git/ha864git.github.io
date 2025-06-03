@@ -9,55 +9,57 @@
 </head>
 
 <body>
-    <label class="title">Rubik's Cube Simulator</label>
-    <button id="shuf" class="cbutton" type="button" onclick="cubeClear()">&#x1f191;</button>
-    <button id="shuf" class="cbutton" type="button" onclick="shuffle()">&#x1f500;</button>
-    <button id="nextStep" class="cbutton" type="button" onclick="nextStep()">&#x27a1;</button>
-    <button id="undo" class="cbutton r270" type="button" onclick="undo()">&#x2934;</button>
-    <button id="redo" class="cbutton r270" type="button" onclick="redo()">&#x2935;</button>
-    <label id="logcount">0</label>
-    <br>
-    <div class="container">
-        <div class="bigcube">
-            <div id="rcubeMain" class="bigcube2" style="transform: rotateY(180deg) rotateZ(180deg);"></div>
-            <div id="westMirror"></div>
-            <div id="northMirror"></div>
-            <div id="bottomMirror"></div>
-            <div style="width: 300px; height: 300px; position: absolute; transform-style: preserve-3d;">
-                <div id="surfaceRings">
-                    <div class="ring3 rsouth">
-                        <img class="imgrotr3 wbutton3" src="./img/rotate90.png" onclick="cubeRotate('south',-90)">
-                        <img class="imgrot3 wbutton3" src="./img/rotate90.png" onclick="cubeRotate('south',90)">
-                    </div>
-                    <div class="ring3 reast">
-                        <img class="imgrotr3 wbutton3" src="./img/rotate90.png" onclick="cubeRotate('east',-90)">
-                        <img class="imgrot3 wbutton3" src="./img/rotate90.png" onclick="cubeRotate('east',90)">
-                    </div>
-                    <div class="ring3 rtop">
-                        <img class="imgrotr3 wbutton3" src="./img/rotate90.png" onclick="cubeRotate('top',-90)">
-                        <img class="imgrot3 wbutton3" src="./img/rotate90.png" onclick="cubeRotate('top',90)">
+    <div class="baseframe">
+        <label class="title">Rubik's Cube Simulator</label>
+        <button id="shuf" class="cbutton" type="button" onclick="cubeClear()">&#x1f191;</button>
+        <button id="shuf" class="cbutton" type="button" onclick="shuffle()">&#x1f500;</button>
+        <button id="nextStep" class="cbutton" type="button" onclick="nextStep()">&#x27a1;</button>
+        <button id="undo" class="cbutton r270" type="button" onclick="undo()">&#x2934;</button>
+        <button id="redo" class="cbutton r270" type="button" onclick="redo()">&#x2935;</button>
+        <label id="logcount">0</label>
+        <br>
+        <div class="container">
+            <div class="bigcube">
+                <div id="rcubeMain" class="bigcube2" style="transform: rotateY(180deg) rotateZ(180deg);"></div>
+                <div id="westMirror"></div>
+                <div id="northMirror"></div>
+                <div id="bottomMirror"></div>
+                <div style="width: 300px; height: 300px; position: absolute; transform-style: preserve-3d;">
+                    <div id="surfaceRings">
+                        <div class="ring3 rsouth">
+                            <img class="imgrotr3 wbutton3" src="./img/rotate90.png" onclick="cubeRotate('south',-90)">
+                            <img class="imgrot3 wbutton3" src="./img/rotate90.png" onclick="cubeRotate('south',90)">
+                        </div>
+                        <div class="ring3 reast">
+                            <img class="imgrotr3 wbutton3" src="./img/rotate90.png" onclick="cubeRotate('east',-90)">
+                            <img class="imgrot3 wbutton3" src="./img/rotate90.png" onclick="cubeRotate('east',90)">
+                        </div>
+                        <div class="ring3 rtop">
+                            <img class="imgrotr3 wbutton3" src="./img/rotate90.png" onclick="cubeRotate('top',-90)">
+                            <img class="imgrot3 wbutton3" src="./img/rotate90.png" onclick="cubeRotate('top',90)">
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div style="width: 300px; height: 300px; position: absolute; transform-style: preserve-3d;">
-                <div id="controlRings">
-                    <div class="ring rnorth">
-                        <img class="imgrotr wbutton" src="./img/rotate90.png" onclick="cwz()">
-                        <img class="imgrot wbutton" src="./img/rotate90.png" onclick="ccwz()">
-                    </div>
-                    <div class="ring rwest">
-                        <img class="imgrotr wbutton" src="./img/rotate90.png" onclick="cwx()">
-                        <img class="imgrot wbutton" src="./img/rotate90.png" onclick="ccwx()">
-                    </div>
-                    <div class="ring rbottom">
-                        <img class="imgrotr wbutton" src="./img/rotate90.png" onclick="ccwy()">
-                        <img class="imgrot wbutton" src="./img/rotate90.png" onclick="cwy()">
+                <div style="width: 300px; height: 300px; position: absolute; transform-style: preserve-3d;">
+                    <div id="controlRings">
+                        <div class="ring rnorth">
+                            <img class="imgrotr wbutton" src="./img/rotate90.png" onclick="cwz()">
+                            <img class="imgrot wbutton" src="./img/rotate90.png" onclick="ccwz()">
+                        </div>
+                        <div class="ring rwest">
+                            <img class="imgrotr wbutton" src="./img/rotate90.png" onclick="cwx()">
+                            <img class="imgrot wbutton" src="./img/rotate90.png" onclick="ccwx()">
+                        </div>
+                        <div class="ring rbottom">
+                            <img class="imgrotr wbutton" src="./img/rotate90.png" onclick="ccwy()">
+                            <img class="imgrot wbutton" src="./img/rotate90.png" onclick="cwy()">
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
+        <textarea id="text_area" autocomplete="one-time-code"></textarea>
     </div>
-    <textarea id="text_area" autocomplete="one-time-code"></textarea>
     <script type="module" src="./index.js"></script>
 </body>
 

@@ -1,6 +1,11 @@
 body {
     background-color: rgb(177, 247, 223);
+}
 
+.baseframe {
+    position: absolute;
+    width: 1450px;
+    height: 950px;
 }
 
 .title {
