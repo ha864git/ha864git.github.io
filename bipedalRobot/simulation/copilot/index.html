@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>2足歩行ロボット脚シミュレーション</title>
+  <style>
+    canvas { background: #f0f0f0; display: block; margin: auto; }
+    body { text-align: center; font-family: sans-serif; }
+  </style>
+</head>
+<body>
+  <h2>片足ロボット脚シミュレーション</h2>
+  <label>上サーボ角度: <input type="range" id="upperServo" min="0" max="180" value="90"></label><br>
+  <label>下サーボ角度: <input type="range" id="lowerServo" min="0" max="180" value="90"></label><br>
+  <canvas id="robotCanvas" width="600" height="400"></canvas>
+  <script src="robot_leg.js"></script>
+</body>
+</html>

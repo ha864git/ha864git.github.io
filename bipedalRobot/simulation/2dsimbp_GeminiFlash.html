@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>２足歩行ロボット 脚シミュレーション</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            background-color: #f0f0f0;
+            font-family: sans-serif;
+            padding: 20px;
+        }
+        canvas {
+            border: 1px solid #ccc;
+            background-color: #fff;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .controls {
+            margin-top: 20px;
+            text-align: center;
+            width: 100%;
+            max-width: 500px;
+        }
+        .control-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input[type="range"] {
+            width: 80%;
+        }
+        .value {
+            display: inline-block;
+            width: 50px;
+            text-align: right;
+            font-weight: normal;
+        }
+        h1 {
+            color: #333;
+        }
+        p {
+            color: #666;
+            text-align: left;
+            width: 100%;
+            max-width: 500px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>２足歩行ロボット 脚シミュレーション</h1>
+    <p>
+        以下のスライダーを操作して、ロボットの脚の動きをシミュレーションします。
+        上のサーボモーターが膝関節の上部リンクを、下のサーボモーターが足首関節のリンクを制御します。
+    </p>
+
+    <canvas id="robotCanvas" width="600" height="400"></canvas>
+
+    <div class="controls">
+        <div class="control-group">
+            <label for="upperServoAngle">上のサーボモーター角度: <span id="upperServoValue" class="value">0</span>°</label>
+            <input type="range" id="upperServoAngle" min="0" max="180" value="90">
+        </div>
+        <div class="control-group">
+            <label for="lowerServoAngle">下のサーボモーター角度: <span id="lowerServoValue" class="value">0</span>°</label>
+            <input type="range" id="lowerServoAngle" min="0" max="180" value="90">
+        </div>
+    </div>
+
+    <script>
+        // キャンバスとコンテキストの取得
+        const canvas = document.getElementById('robotCanvas');
+        const ctx = canvas.getContext('2d');
+
+        // スライダーと値の表示要素の取得
+        const upperServoSlider = document.getElementById('upperServoAngle');
+        const upperServoValueSpan = document.getElementById('upperServoValue');
+        const lowerServoSlider = document.getElementById('lowerServoAngle');
+        const lowerServoValueSpan = document.getElementById('lowerServoValue');
+
+        // 定数の定義（mm単位をピクセルに変換）
+        const SCALE = 2; // 1mm = 2px
+        const WAIST_DISTANCE = 30 * SCALE; // 腰関節の軸間距離
+        const KNEE_DISTANCE = 20 * SCALE; // 膝関節の上下サーボ軸間距離
+        const ARM_LENGTH = 20 * SCALE; // アームの長さ
+        const LINK_ARM_LENGTH = 30 * SCALE; // 膝関節の水平アームの長さ
+
+        // キャンバスの中心を原点に設定
+        const centerX = canvas.width / 2;
+        const centerY = canvas.height / 2;
+
+        /**
+         * 角度をラジアンに変換する関数
+         * @param {number} degrees 角度
+         * @returns {number} ラジアン
+         */
+        function toRadians(degrees) {
+            return degrees * Math.PI / 180;
+        }
+
+        /**
+         * シミュレーションを描画する関数
+         */
+        function draw() {
+            // キャンバスをクリア
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // 現在のサーボモーターの角度を取得
+            const upperServoAngle = parseFloat(upperServoSlider.value);
+            const lowerServoAngle = parseFloat(lowerServoSlider.value);
+            upperServoValueSpan.textContent = upperServoAngle;
+            lowerServoValueSpan.textContent = lowerServoAngle;
+
+            // --- 腰関節の座標計算 ---
+            // 腰の基準点をキャンバスの上部に設定
+            const waistY = centerY - 100;
+            const A1 = { x: centerX - WAIST_DISTANCE / 2, y: waistY };
+            const B1 = { x: centerX + WAIST_DISTANCE / 2, y: waistY };
+
+            // --- 膝関節の座標計算（上部リンク） ---
+            // 上のサーボモーターの軸をP21、自由回転軸をA21とする
+            // P21はB1の真下に、A21はA1の真下に配置されると仮定
+            const P21 = { x: B1.x, y: waistY + KNEE_DISTANCE / 2 };
+            const A21 = { x: A1.x, y: waistY + KNEE_DISTANCE / 2 };
+
+            // 上のサーボモーターのアーム（P21からB1へ）
+            // アームの長さは20mm。記述から、このアームはB1に繋がっている。
+            // また、A21からA1に繋がるアームも長さ20mm。
+            // 膝関節のサーボ軸は、アームの水平左方向に30mm離れている。
+            // この記述を平行リンクとして解釈し、P21-A21とB1-A1が平行になるように計算する。
+            // ここでは、ユーザーの指示通り、サーボモーターの回転角度を直接リンクに反映させる。
+            
+            // 上部サーボモーターの回転角度（左水平0°から上側へ180°）
+            // 記述は左水平から上側を移動して右水平まで180度なので、0から180度
+            const upperServoRad = toRadians(180 - upperServoAngle); 
+
+            // P21から伸びるアームの先端座標（=B1と接続）を再計算
+            // ここはP21-B1アームが回転すると解釈
+            const B1_recalc = { 
+                x: P21.x + ARM_LENGTH * Math.cos(upperServoRad), 
+                y: P21.y - ARM_LENGTH * Math.sin(upperServoRad) 
+            };
+            
+            // A21から伸びるアームの先端座標（=A1と接続）も同様に回転
+            // こちらは自由回転アームなので、平行リンクとして動きを定義
+            // (P21, B1_recalc) と (A21, A1_recalc) の関係を維持
+            const A1_recalc = { 
+                x: A21.x + (B1_recalc.x - P21.x),
+                y: A21.y + (B1_recalc.y - P21.y)
+            };
+
+            // --- 足首関節の座標計算（下部リンク） ---
+            // 下のサーボモーターの軸をP22、自由回転軸をA22とする
+            const P22 = { x: B1.x, y: waistY + KNEE_DISTANCE * 2 + ARM_LENGTH * 2 };
+            const A22 = { x: A1.x, y: waistY + KNEE_DISTANCE * 2 + ARM_LENGTH * 2 };
+            
+            // 下部サーボモーターの回転角度（右水平0°から下側へ180°）
+            // 記述は右水平から下側を移動して左水平まで180度なので、0から180度
+            const lowerServoRad = toRadians(lowerServoAngle); 
+            
+            // P22から伸びるアームの先端座標（=B3と接続）
+            const B3 = {
+                x: P22.x + ARM_LENGTH * Math.cos(lowerServoRad),
+                y: P22.y + ARM_LENGTH * Math.sin(lowerServoRad)
+            };
+            
+            // A22から伸びるアームの先端座標（=A3と接続）
+            // 平行リンクとして動きを定義
+            const A3 = { 
+                x: A22.x + (B3.x - P22.x),
+                y: A22.y + (B3.y - P22.y)
+            };
+
+            // --- 描画 ---
+            ctx.lineWidth = 4;
+
+            // 腰関節
+            ctx.fillStyle = 'black';
+            drawJoint(A1, 'A1');
+            drawJoint(B1, 'B1');
+
+            // 膝関節（上部リンク）
+            ctx.strokeStyle = '#2c3e50';
+            drawLine(A1, A21);
+            drawLine(B1_recalc, P21);
+            drawLine(A1_recalc, B1_recalc); // この部分がアームの先端を繋ぐ部分と解釈
+            drawLine(A21, P21);
+            drawJoint(A21, 'A21');
+            drawJoint(P21, 'P21', '#c0392b'); // サーボモーターは赤色
+            drawJoint(A1_recalc, 'A1'); // 更新後のA1
+            drawJoint(B1_recalc, 'B1'); // 更新後のB1
+
+            // 膝関節（下部リンク）
+            ctx.strokeStyle = '#2c3e50';
+            drawLine(A3, A22);
+            drawLine(B3, P22);
+            drawLine(A22, P22);
+            drawLine(A3, B3); // この部分がアームの先端を繋ぐ部分と解釈
+            drawJoint(A22, 'A22');
+            drawJoint(P22, 'P22', '#c0392b'); // サーボモーターは赤色
+
+            // 足首関節
+            ctx.fillStyle = 'black';
+            drawJoint(A3, 'A3');
+            drawJoint(B3, 'B3');
+        }
+
+        /**
+         * 線を描画するヘルパー関数
+         * @param {object} p1 開始点
+         * @param {object} p2 終了点
+         */
+        function drawLine(p1, p2) {
+            ctx.beginPath();
+            ctx.moveTo(p1.x, p1.y);
+            ctx.lineTo(p2.x, p2.y);
+            ctx.stroke();
+            ctx.closePath();
+        }
+        
+        /**
+         * 関節（点）を描画するヘルパー関数
+         * @param {object} p 点の座標
+         * @param {string} label ラベル
+         * @param {string} color 点の色
+         */
+        function drawJoint(p, label, color = 'black') {
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, 5, 0, 2 * Math.PI);
+            ctx.fillStyle = color;
+            ctx.fill();
+            ctx.closePath();
+            ctx.fillStyle = '#333';
+            ctx.fillText(label, p.x + 8, p.y - 8);
+        }
+
+        // スライダーのイベントリスナーを設定
+        upperServoSlider.addEventListener('input', draw);
+        lowerServoSlider.addEventListener('input', draw);
+
+        // 初回描画
+        draw();
+    </script>
+
+</body>
+</html>
