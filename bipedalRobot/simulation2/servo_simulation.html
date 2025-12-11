@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Robo5 Simulation</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-family: sans-serif;
+        }
+
+        canvas {
+            border: 2px solid black;
+            margin: 20px 0;
+            background-color: #f0f0f0;
+        }
+
+        .controls {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            width: 400px;
+        }
+
+        .slider-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        input[type="range"] {
+            width: 70%;
+        }
+
+        label {
+            width: 25%;
+            font-weight: bold;
+        }
+
+        .btn_preset {
+            width: 40px;
+            height: 30px;
+            margin: 0 2px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>Robo5 Simulation</h1>
+    <canvas id="simulationCanvas" width="400" height="400"></canvas>
+
+    <div>
+        <table border="1" cellpadding="5">
+            <tr>
+                <td colspan="6" style="color: black;text-align: center;">WS</th>
+            </tr>
+            <tr>
+                <td colspan="6" style="text-align: center;">
+                    <input type="range" id="servoWS" min="10" max="170" value="90" style="width: 150px;">
+                </td>
+            </tr>
+            <tr>
+                <td colspan="6" style="text-align: center;"><span id="angleWSValue">90°</span> </td>
+            </tr>
+            <tr>
+                <td colspan="2" style="text-align: center;"><button type="button" id="btn_WS_0"
+                        class="btn_preset">45</button></td>
+                <td colspan="2" style="text-align: center;"><button type="button" id="btn_WS_1"
+                        class="btn_preset">0</button></td>
+                <td colspan="2" style="text-align: center;"><button type="button" id="btn_WS_2"
+                        class="btn_preset">-45</button></td>
+            </tr>
+            <tr>
+                <td colspan="3" style="color: black;text-align: center;">L</th>
+                <td colspan="3" style="color: orange;text-align: center;">R</th>
+            </tr>
+            <tr>
+                <td colspan="3">
+                    <input type="range" id="servoL1" min="10" max="170" value="90" style="width: 150px;">
+                </td>
+                <td colspan="3">
+                    <input type="range" id="servoR1" min="10" max="170" value="90" style="width: 150px;">
+                </td>
+            </tr>
+            <tr>
+                <td colspan="3" style="text-align: center;"><span id="angleL1Value">90°</span> </td>
+                <td colspan="3" style="text-align: center;"><span id="angleR1Value">90°</span> </td>
+            </tr>
+            <tr>
+                <td><button type="button" id="btn_L1_0" class="btn_preset">30</button></td>
+                <td><button type="button" id="btn_L1_1" class="btn_preset">0</button></td>
+                <td><button type="button" id="btn_L1_2" class="btn_preset">-30</button></td>
+                <td><button type="button" id="btn_R1_0" class="btn_preset">30</button></td>
+                <td><button type="button" id="btn_R1_1" class="btn_preset">0</button></td>
+                <td><button type="button" id="btn_R1_2" class="btn_preset">-30</button></td>
+            </tr>
+            <tr>
+                <td colspan="3">
+                    <input type="range" id="servoL2" min="10" max="170" value="90" style="width: 150px;">
+                </td>
+                <td colspan="3">
+                    <input type="range" id="servoR2" min="10" max="170" value="90" style="width: 150px;">
+                </td>
+            </tr>
+            <tr>
+                <td colspan="3" style="text-align: center;"><span id="angleL2Value">90°</span> </td>
+                <td colspan="3" style="text-align: center;"><span id="angleR2Value">90°</span> </td>
+            </tr>
+            <tr>
+                <td><button type="button" id="btn_L2_0" class="btn_preset">30</button></td>
+                <td><button type="button" id="btn_L2_1" class="btn_preset">0</button></td>
+                <td><button type="button" id="btn_L2_2" class="btn_preset">-30</button></td>
+                <td><button type="button" id="btn_R2_0" class="btn_preset">30</button></td>
+                <td><button type="button" id="btn_R2_1" class="btn_preset">0</button></td>
+                <td><button type="button" id="btn_R2_2" class="btn_preset">-30</button></td>
+            </tr>
+        </table>
+    </div>
+    <div class="controls">
+        <button id="downloadBtn" style="margin-top: 20px; padding: 10px 20px; font-size: 16px; cursor: pointer;">
+            画像をダウンロード
+        </button>
+    </div>
+
+    <script>
+
+        // キャンバスをダウンロード
+        document.getElementById('downloadBtn').addEventListener('click', function () {
+            // canvas を PNG 画像に変換
+            canvas.toBlob(function (blob) {
+                // Blob オブジェクトから URL を生成
+                const url = URL.createObjectURL(blob);
+
+                // <a> タグを動的に作成してダウンロード
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'simulation_' + new Date().getTime() + '.png';
+                document.body.appendChild(a);
+                a.click();
+
+                // クリーンアップ
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            });
+        });
+
+        const mag = 2.0;
+
+        // キャンバスとスライダーの要素を取得
+        const canvas = document.getElementById('simulationCanvas');
+        const ctx = canvas.getContext('2d');
+        const servoR1Slider = document.getElementById('servoR1');
+        const servoR2Slider = document.getElementById('servoR2');
+        const angleR1Value = document.getElementById('angleR1Value');
+        const angleR2Value = document.getElementById('angleR2Value');
+        const servoL1Slider = document.getElementById('servoL1');
+        const servoL2Slider = document.getElementById('servoL2');
+        const angleL1Value = document.getElementById('angleL1Value');
+        const angleL2Value = document.getElementById('angleL2Value');
+        const servoWSSlider = document.getElementById('servoWS');
+        const angleWSValue = document.getElementById('angleWSValue');
+
+        // アームの長さ
+        const armLength1 = 25 * mag;
+        const armLength2 = 25 * mag;
+        const len1 = 20 * mag;
+        const len2 = 60 * mag;
+        const len3 = 15 * mag;
+        const len4 = 50 * mag;
+
+        // キャンバスの中心を原点にするためのオフセット
+        const offsetX = canvas.width / 2;
+        const offsetY = canvas.height / 2;
+
+        function draw() {
+            // キャンバスをクリア
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // 現在のスライダーの値を取得し、ラジアンに変換
+            const angleR1Deg = 180 - parseInt(servoR1Slider.value);
+            const angleR2Deg = 180 - parseInt(servoR2Slider.value);
+            const angleL1Deg = 180 - parseInt(servoL1Slider.value);
+            const angleL2Deg = 180 - parseInt(servoL2Slider.value);
+            const angleWSDeg = 180 - parseInt(servoWSSlider.value);
+
+            // 画面に角度を表示
+            angleR1Value.textContent = `${angleR1Deg - 90}°`;
+            angleR2Value.textContent = `${angleR2Deg - 90}°`;
+            angleL1Value.textContent = `${angleL1Deg - 90}°`;
+            angleL2Value.textContent = `${angleL2Deg - 90}°`;
+            angleWSValue.textContent = `${angleWSDeg - 90}°`;
+
+            // 度をラジアンに変換 (Math.sin, Math.cosはラジアンを使用)
+            const angleR1Rad = angleR1Deg * Math.PI / 180;
+            const angleR2Rad = angleR2Deg * Math.PI / 180;
+            const angleL1Rad = angleL1Deg * Math.PI / 180;
+            const angleL2Rad = angleL2Deg * Math.PI / 180;
+
+            // アーム1の先端の座標を計算
+            // `cos`と`sin`を使って極座標からデカルト座標へ変換
+            const xr1 = Math.cos(angleR1Rad) * armLength1;
+            const yr1 = Math.sin(angleR1Rad) * armLength1;
+            const xl1 = Math.cos(angleL1Rad) * armLength1;
+            const yl1 = Math.sin(angleL1Rad) * armLength1;
+
+            // アーム2の先端の座標を計算（アーム1の先端を基準とする）
+            // アーム2の回転角はアーム1の回転角に加算される
+            const xr2 = xr1 + Math.cos(angleR2Rad) * armLength2;
+            const yr2 = yr1 + Math.sin(angleR2Rad) * armLength2;
+            const xl2 = xl1 + Math.cos(angleL2Rad) * armLength2;
+            const yl2 = yl1 + Math.sin(angleL2Rad) * armLength2;
+
+            const xr3 = xr2;
+            const yr3 = yr2 + len1;
+            const xl3 = xl2;
+            const yl3 = yl2 + len1;
+
+            const xr4 = xr2 - len2 / 2;
+            const yr4 = yr3;
+            const xl4 = xl2 - len2 / 2;
+            const yl4 = yl3;
+
+            const xr5 = xr2 + len2 / 2;
+            const yr5 = yr4;
+            const xl5 = xl2 + len2 / 2;
+            const yl5 = yl4;
+
+
+            const weight_on_lineWidth = 8;
+            const weight_off_lineWidth = 2;
+            const strokeStyle_right = 'rgba(255, 102,0 , 0.5)';
+            const fillStyle_right = strokeStyle_right;
+            const strokeStyle_left = 'black';
+            const fillStyle_left = strokeStyle_left;
+
+
+            ctx.lineWidth = weight_off_lineWidth;
+            if (servoWSSlider.value > 90) ctx.lineWidth = weight_on_lineWidth;
+            ctx.strokeStyle = 'black';
+
+            ctx.beginPath();
+            ctx.moveTo(offsetX, offsetY);
+            ctx.lineTo(offsetX + xl1, offsetY + yl1);
+            ctx.stroke();
+
+            ctx.beginPath();
+            ctx.moveTo(offsetX + xl1, offsetY + yl1);
+            ctx.lineTo(offsetX + xl2, offsetY + yl2);
+            ctx.stroke();
+
+            ctx.beginPath();
+            ctx.moveTo(offsetX + xl2, offsetY + yl2);
+            ctx.lineTo(offsetX + xl3, offsetY + yl3);
+            ctx.stroke();
+
+            ctx.lineWidth = 5;
+            ctx.beginPath();
+            ctx.moveTo(offsetX + xl4, offsetY + yl4);
+            ctx.lineTo(offsetX + xl5, offsetY + yl5);
+            ctx.stroke();
+
+            ctx.fillStyle = fillStyle_left;
+
+            ctx.beginPath();
+            ctx.arc(offsetX + xl1, offsetY + yl1, 8, 0, 2 * Math.PI); // 関節
+            ctx.fill();
+
+            ctx.beginPath();
+            ctx.arc(offsetX + xl2, offsetY + yl2, 8, 0, 2 * Math.PI); // 関節
+            ctx.fill();
+
+
+            ctx.lineWidth = weight_off_lineWidth;
+            if (servoWSSlider.value < 90) ctx.lineWidth = weight_on_lineWidth;
+            ctx.strokeStyle = strokeStyle_right;
+
+            ctx.beginPath();
+            ctx.moveTo(offsetX, offsetY);
+            ctx.lineTo(offsetX + xr1, offsetY + yr1);
+            ctx.stroke();
+
+            ctx.beginPath();
+            ctx.moveTo(offsetX + xr1, offsetY + yr1);
+            ctx.lineTo(offsetX + xr2, offsetY + yr2);
+            ctx.stroke();
+
+            ctx.beginPath();
+            ctx.moveTo(offsetX + xr2, offsetY + yr2);
+            ctx.lineTo(offsetX + xr3, offsetY + yr3);
+            ctx.stroke();
+
+            ctx.lineWidth = 5;
+            ctx.beginPath();
+            ctx.moveTo(offsetX + xr4, offsetY + yr4);
+            ctx.lineTo(offsetX + xr5, offsetY + yr5);
+            ctx.stroke();
+
+            ctx.lineWidth = 5;
+            ctx.strokeStyle = 'rgba(255, 165,0 , 0.5)';
+
+            ctx.fillStyle = fillStyle_right;
+
+            ctx.beginPath();
+            ctx.arc(offsetX + xr1, offsetY + yr1, 8, 0, 2 * Math.PI); // 関節
+            ctx.fill();
+
+            ctx.beginPath();
+            ctx.arc(offsetX + xr2, offsetY + yr2, 8, 0, 2 * Math.PI); // 関節
+            ctx.fill();
+
+            // Body-支点間を描画
+            ctx.lineWidth = weight_on_lineWidth;
+            ctx.strokeStyle = 'blue';
+            ctx.beginPath();
+            ctx.moveTo(offsetX, offsetY); // 原点から描画開始
+            ctx.lineTo(offsetX, offsetY - len3); // アーム1の先端まで描画
+            ctx.stroke();
+
+            // Body部分を描画
+            ctx.fillStyle = 'blue';
+            ctx.fillRect(offsetX - len2 / 2, offsetY - len3 - len4, len2, len4); // 支点
+
+            // 支点を描画
+            ctx.beginPath();
+            ctx.arc(offsetX, offsetY, 8, 0, 2 * Math.PI); // 支点
+            ctx.fill();
+
+        }
+
+        // スライダーの値が変更されたときに`draw`関数を呼び出す
+        servoR1Slider.addEventListener('input', draw);
+        servoR2Slider.addEventListener('input', draw);
+        servoL1Slider.addEventListener('input', draw);
+        servoL2Slider.addEventListener('input', draw);
+        servoWSSlider.addEventListener('input', draw);
+
+        // 初期描画
+        draw();
+
+        for (let btn of document.getElementsByClassName('btn_preset')) {
+            btn.addEventListener('click', function () {
+                const angle = parseInt(this.textContent);
+                const kind = this.id.split('_')[1];
+                const servoSlider = document.getElementById('servo' + kind);
+                servoSlider.value = 90 - angle;
+                draw();
+            });
+        }
+
+
+
+    </script>
+</body>
+
+</html>
