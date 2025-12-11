@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>二足歩行ロボット脚のシミュレーション</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', 'Noto Sans JP', sans-serif;
+            touch-action: none;
+            /* Disable pinch-zoom on mobile */
+        }
+
+        canvas {
+            background-color: #f1f5f9;
+            /* slate-100 */
+            border: 1px solid #cbd5e1;
+            /* slate-300 */
+            border-radius: 0.5rem;
+        }
+
+        .control-label {
+            font-size: 0.875rem;
+            color: #475569;
+            /* slate-600 */
+        }
+    </style>
+</head>
+
+<body class="bg-slate-50 text-slate-800 flex flex-col items-center justify-center min-h-screen p-4">
+
+    <div class="w-full max-w-2xl mx-auto">
+        <h1 class="text-2xl font-bold text-center text-slate-700 mb-4">ロボット脚 シミュレーション</h1>
+
+        <div class="bg-white p-6 rounded-lg shadow-md">
+            <!-- Canvas for the simulation -->
+            <canvas id="simulationCanvas" width="600" height="400"></canvas>
+
+            <!-- Controls for the joints -->
+            <div class="mt-6 grid grid-cols-2 gap-4">
+                <!-- 左脚の枠（青系） -->
+                <div class="border border-blue-400 rounded-lg p-3 bg-blue-50">
+                    <label for="hipSliderL" class="control-label block mb-1">左腰関節 (Left Hip)</label>
+                    <input id="hipSliderL" type="range" min="-90" max="90" value="0"
+                        class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer">
+                    <span id="hipAngleLValue" class="block text-xs text-slate-500 mt-1"></span>
+                    <label for="kneeSliderL" class="control-label block mb-1 mt-2">左膝関節 (Left Knee)</label>
+                    <input id="kneeSliderL" type="range" min="-90" max="90" value="0"
+                        class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer">
+                    <span id="kneeAngleLValue" class="block text-xs text-slate-500 mt-1"></span>
+                </div>
+                <!-- 右脚の枠（赤系） -->
+                <div class="border border-red-400 rounded-lg p-3 bg-red-50">
+                    <label for="hipSliderR" class="control-label block mb-1">右腰関節 (Right Hip)</label>
+                    <input id="hipSliderR" type="range" min="-90" max="90" value="0"
+                        class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer">
+                    <span id="hipAngleRValue" class="block text-xs text-slate-500 mt-1"></span>
+                    <label for="kneeSliderR" class="control-label block mb-1 mt-2">右膝関節 (Right Knee)</label>
+                    <input id="kneeSliderR" type="range" min="-90" max="90" value="0"
+                        class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer">
+                    <span id="kneeAngleRValue" class="block text-xs text-slate-500 mt-1"></span>
+                </div>
+            </div>
+
+            <!-- モーションエディタUI -->
+            <div class="mt-6">
+                <div id="timeline" class="flex gap-2 mb-2"></div>
+                <div class="flex gap-2">
+                    <button id="addFrameBtn" class="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600">フレーム追加</button>
+                    <button id="deleteFrameBtn" class="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600">フレーム削除</button>
+                    <button id="playBtn" class="px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600">再生</button>
+                    <button id="stopBtn" class="px-3 py-1 bg-gray-400 text-white rounded hover:bg-gray-500">停止</button>
+                    <button id="saveBtn" class="px-3 py-1 bg-yellow-500 text-white rounded hover:bg-yellow-600">保存</button>
+                    <button id="loadBtn" class="px-3 py-1 bg-purple-500 text-white rounded hover:bg-purple-600">読込</button>
+                    <input type="file" id="fileInput" class="hidden" accept=".json">
+                </div>
+                <div id="frameInfo" class="mt-2 text-xs text-slate-500"></div>
+            </div>
+        </div>
+
+        <div class="mt-6 text-sm text-slate-500 bg-white p-4 rounded-lg shadow-md">
+            <h2 class="font-semibold text-slate-600 mb-2">構成詳細</h2>
+            <ul class="list-disc list-inside space-y-1">
+                <li><span class="font-semibold">腰 (青):</span> 固定部。A1とB1の2軸。</li>
+                <li><span class="font-semibold">腿 (緑):</span> サーボモーターを搭載。A21/A22とS_upper/S_lowerの4軸を持つ。</li>
+                <li><span class="font-semibold">足首 (赤):</span> 脚の先端。A3とB3の2軸。</li>
+                <li><span class="font-semibold">アーム (灰):</span> 各パーツを接続する20mmのアーム。</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        // --- Setup ---
+        const canvas = document.getElementById('simulationCanvas');
+        const ctx = canvas.getContext('2d');
+        const hipSliderL = document.getElementById('hipSliderL');
+        const kneeSliderL = document.getElementById('kneeSliderL');
+        const hipSliderR = document.getElementById('hipSliderR');
+        const kneeSliderR = document.getElementById('kneeSliderR');
+        const hipAngleLValue = document.getElementById('hipAngleLValue');
+        const kneeAngleLValue = document.getElementById('kneeAngleLValue');
+        const hipAngleRValue = document.getElementById('hipAngleRValue');
+        const kneeAngleRValue = document.getElementById('kneeAngleRValue');
+
+        // モーションエディタ関連
+        const timelineDiv = document.getElementById('timeline');
+        const addFrameBtn = document.getElementById('addFrameBtn');
+        const deleteFrameBtn = document.getElementById('deleteFrameBtn');
+        const playBtn = document.getElementById('playBtn');
+        const stopBtn = document.getElementById('stopBtn');
+        const saveBtn = document.getElementById('saveBtn');
+        const loadBtn = document.getElementById('loadBtn');
+        const fileInput = document.getElementById('fileInput');
+        const frameInfo = document.getElementById('frameInfo');
+
+        // --- Constants ---
+        const SCALE = 3;
+        const HIP_WIDTH = 30 * SCALE;
+        const ANKLE_WIDTH = 30 * SCALE;
+        const THIGH_WIDTH = 30 * SCALE;
+        const THIGH_HEIGHT = 20 * SCALE;
+        const ARM_LENGTH = 20 * SCALE;
+
+        // --- モーションデータ ---
+        let frames = []; // [{hipL, kneeL, hipR, kneeR}]
+        let currentFrame = 0;
+        let isPlaying = false;
+        let playInterval = null;
+        const FRAME_DURATION = 300; // ms
+
+        // --- Helper Functions ---
+        function toRadians(degrees) {
+            return degrees * (Math.PI / 180);
+        }
+
+        function drawLine(p1, p2, color = 'black', lineWidth = 2) {
+            ctx.beginPath();
+            ctx.moveTo(p1.x, p1.y);
+            ctx.lineTo(p2.x, p2.y);
+            ctx.strokeStyle = color;
+            ctx.lineWidth = lineWidth;
+            ctx.stroke();
+        }
+
+        function drawJoint(p, label, color = '#475569') {
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, 5, 0, 2 * Math.PI);
+            ctx.fillStyle = color;
+            ctx.fill();
+
+            ctx.font = '12px Inter';
+            ctx.fillStyle = '#1e293b';
+            ctx.fillText(label, p.x + 8, p.y + 4);
+        }
+
+        function updateAngleDisplays() {
+            hipAngleLValue.textContent = `角度: ${hipSliderL.value}°`;
+            kneeAngleLValue.textContent = `角度: ${kneeSliderL.value}°`;
+            hipAngleRValue.textContent = `角度: ${hipSliderR.value}°`;
+            kneeAngleRValue.textContent = `角度: ${kneeSliderR.value}°`;
+        }
+
+        // --- Main Simulation Logic ---
+        function drawLeg(A1, B1, hipAngle, kneeAngle, colorSuffix = '') {
+            const A21 = {
+                x: A1.x + ARM_LENGTH * Math.cos(hipAngle + Math.PI / 2),
+                y: A1.y + ARM_LENGTH * Math.sin(hipAngle + Math.PI / 2)
+            };
+            const S_upper = {
+                x: B1.x + (A21.x - A1.x),
+                y: B1.y + (A21.y - A1.y)
+            };
+
+            const thighAxisVec = { x: S_upper.x - A21.x, y: S_upper.y - A21.y };
+            const thighAngle = Math.atan2(thighAxisVec.y, thighAxisVec.x);
+            const A22 = {
+                x: A21.x + THIGH_HEIGHT * Math.cos(thighAngle + Math.PI / 2),
+                y: A21.y + THIGH_HEIGHT * Math.sin(thighAngle + Math.PI / 2)
+            };
+            const S_lower = {
+                x: S_upper.x + THIGH_HEIGHT * Math.cos(thighAngle + Math.PI / 2),
+                y: S_upper.y + THIGH_HEIGHT * Math.sin(thighAngle + Math.PI / 2)
+            };
+
+            const absoluteKneeAngle = thighAngle + kneeAngle;
+            const A3 = {
+                x: A22.x + ARM_LENGTH * Math.cos(absoluteKneeAngle + Math.PI / 2),
+                y: A22.y + ARM_LENGTH * Math.sin(absoluteKneeAngle + Math.PI / 2)
+            };
+            const B3 = {
+                x: S_lower.x + (A3.x - A22.x),
+                y: S_lower.y + (A3.y - A22.y)
+            };
+
+            // 色分け
+            let linkColor, hipColor, thighColor, ankleColor, jointColor;
+            if (colorSuffix === 'L') {
+                linkColor = '#60a5fa';    // 青系
+                hipColor = '#2563eb';
+                thighColor = '#38bdf8';
+                ankleColor = '#0ea5e9';
+                jointColor = '#2563eb';
+            } else {
+                linkColor = '#f87171';    // 赤系
+                hipColor = '#dc2626';
+                thighColor = '#fb7185';
+                ankleColor = '#f43f5e';
+                jointColor = '#dc2626';
+            }
+
+            const linkWidth = 4;
+            drawLine(A1, A21, linkColor, linkWidth);
+            drawLine(B1, S_upper, linkColor, linkWidth);
+            drawLine(A22, A3, linkColor, linkWidth);
+            drawLine(S_lower, B3, linkColor, linkWidth);
+
+            const segmentWidth = 8;
+            drawLine(A1, B1, hipColor, segmentWidth);
+            drawLine(A21, S_upper, thighColor, segmentWidth);
+            drawLine(A22, S_lower, thighColor, segmentWidth);
+            drawLine(A21, A22, thighColor, segmentWidth);
+            drawLine(S_upper, S_lower, thighColor, segmentWidth);
+            drawLine(A3, B3, ankleColor, segmentWidth);
+
+            drawJoint(A1, 'A1' + colorSuffix, jointColor);
+            drawJoint(B1, 'B1' + colorSuffix, jointColor);
+            drawJoint(A21, 'A21' + colorSuffix, jointColor);
+            drawJoint(S_upper, 'S_upper' + colorSuffix, jointColor);
+            drawJoint(A22, 'A22' + colorSuffix, jointColor);
+            drawJoint(S_lower, 'S_lower' + colorSuffix, jointColor);
+            drawJoint(A3, 'A3' + colorSuffix, jointColor);
+            drawJoint(B3, 'B3' + colorSuffix, jointColor);
+        }
+
+        function draw() {
+            // スライダー値の符号を逆にして回転方向を合わせる
+            let hipAngleL = toRadians(-parseFloat(hipSliderL.value));
+            let kneeAngleL = toRadians(-parseFloat(kneeSliderL.value));
+            let hipAngleR = toRadians(-parseFloat(hipSliderR.value));
+            let kneeAngleR = toRadians(-parseFloat(kneeSliderR.value));
+
+            // 再生中はフレームの値を使う
+            if (isPlaying && frames.length > 0) {
+                const f = frames[currentFrame];
+                hipAngleL = toRadians(-f.hipL);
+                kneeAngleL = toRadians(-f.kneeL);
+                hipAngleR = toRadians(-f.hipR);
+                kneeAngleR = toRadians(-f.kneeR);
+            }
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            const canvasCenter = { x: canvas.width / 2, y: 50 };
+            const A1 = { x: canvasCenter.x - HIP_WIDTH / 2, y: canvasCenter.y };
+            const B1 = { x: canvasCenter.x + HIP_WIDTH / 2, y: canvasCenter.y };
+
+            drawLeg(A1, B1, hipAngleL, kneeAngleL, 'L');
+            drawLeg(A1, B1, hipAngleR, kneeAngleR, 'R');
+        }
+
+        // --- モーションエディタ機能 ---
+        function renderTimeline() {
+            timelineDiv.innerHTML = '';
+            frames.forEach((f, idx) => {
+                const btn = document.createElement('button');
+                btn.textContent = idx + 1;
+                btn.className = 'px-2 py-1 rounded border ' +
+                    (idx === currentFrame ? 'bg-blue-200 border-blue-400 font-bold' : 'bg-slate-100 border-slate-300');
+                btn.onclick = () => {
+                    currentFrame = idx;
+                    setSlidersFromFrame(frames[idx]);
+                    renderTimeline();
+                    updateFrameInfo();
+                };
+                timelineDiv.appendChild(btn);
+            });
+            updateFrameInfo();
+        }
+
+        function setSlidersFromFrame(frame) {
+            hipSliderL.value = frame.hipL;
+            kneeSliderL.value = frame.kneeL;
+            hipSliderR.value = frame.hipR;
+            kneeSliderR.value = frame.kneeR;
+            updateAngleDisplays();
+        }
+
+        function getCurrentSliderFrame() {
+            return {
+                hipL: parseInt(hipSliderL.value),
+                kneeL: parseInt(kneeSliderL.value),
+                hipR: parseInt(hipSliderR.value),
+                kneeR: parseInt(kneeSliderR.value)
+            };
+        }
+
+        addFrameBtn.onclick = () => {
+            frames.push(getCurrentSliderFrame());
+            currentFrame = frames.length - 1;
+            renderTimeline();
+        };
+
+        deleteFrameBtn.onclick = () => {
+            if (frames.length === 0) return;
+            frames.splice(currentFrame, 1);
+            if (currentFrame >= frames.length) currentFrame = frames.length - 1;
+            renderTimeline();
+            if (frames.length > 0) setSlidersFromFrame(frames[currentFrame]);
+        };
+
+        function updateFrameInfo() {
+            if (frames.length === 0) {
+                frameInfo.textContent = 'フレームなし';
+            } else {
+                const f = frames[currentFrame];
+                frameInfo.textContent =
+                    `選択フレーム: ${currentFrame + 1} / ${frames.length}　` +
+                    `左腰: ${f.hipL}° 左膝: ${f.kneeL}° 右腰: ${f.hipR}° 右膝: ${f.kneeR}°`;
+            }
+        }
+
+        // --- 再生・停止 ---
+        playBtn.onclick = () => {
+            if (frames.length === 0) return;
+            isPlaying = true;
+            playBtn.disabled = true;
+            stopBtn.disabled = false;
+            let frameCount = frames.length;
+            playInterval = setInterval(() => {
+                currentFrame = (currentFrame + 1) % frameCount;
+                setSlidersFromFrame(frames[currentFrame]);
+                renderTimeline();
+            }, FRAME_DURATION);
+        };
+
+        stopBtn.onclick = () => {
+            isPlaying = false;
+            playBtn.disabled = false;
+            stopBtn.disabled = true;
+            clearInterval(playInterval);
+        };
+
+        // --- 保存・読込 ---
+        saveBtn.onclick = () => {
+            const dataStr = JSON.stringify(frames, null, 2);
+            const blob = new Blob([dataStr], { type: "application/json" });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'motion.json';
+            a.click();
+            URL.revokeObjectURL(url);
+        };
+
+        loadBtn.onclick = () => {
+            fileInput.click();
+        };
+
+        fileInput.onchange = (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+                try {
+                    const loaded = JSON.parse(ev.target.result);
+                    if (Array.isArray(loaded) && loaded.every(f =>
+                        typeof f.hipL === 'number' &&
+                        typeof f.kneeL === 'number' &&
+                        typeof f.hipR === 'number' &&
+                        typeof f.kneeR === 'number'
+                    )) {
+                        frames = loaded;
+                        currentFrame = 0;
+                        setSlidersFromFrame(frames[0]);
+                        renderTimeline();
+                    } else {
+                        alert('不正なデータ形式です');
+                    }
+                } catch {
+                    alert('読込に失敗しました');
+                }
+            };
+            reader.readAsText(file);
+        };
+
+        // --- Animation Loop ---
+        function animate() {
+            draw();
+            requestAnimationFrame(animate);
+        }
+
+        hipSliderL.addEventListener('input', updateAngleDisplays);
+        kneeSliderL.addEventListener('input', updateAngleDisplays);
+        hipSliderR.addEventListener('input', updateAngleDisplays);
+        kneeSliderR.addEventListener('input', updateAngleDisplays);
+
+        hipSliderL.addEventListener('input', () => { if (!isPlaying) updateFrameInfo(); });
+        kneeSliderL.addEventListener('input', () => { if (!isPlaying) updateFrameInfo(); });
+        hipSliderR.addEventListener('input', () => { if (!isPlaying) updateFrameInfo(); });
+        kneeSliderR.addEventListener('input', () => { if (!isPlaying) updateFrameInfo(); });
+
+        // 初期表示
+        updateAngleDisplays();
+        renderTimeline();
+        stopBtn.disabled = true;
+        animate();
+    </script>
+
+</body>
+
+</html>
